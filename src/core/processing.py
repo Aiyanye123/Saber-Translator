@@ -36,7 +36,7 @@ def process_image_translation(
     prompt_content='',
     use_textbox_prompt=False,
     textbox_prompt_content='',
-    inpainting_method='solid', # 'solid', 'lama'
+    inpainting_method='solid', # 'solid', 'lama', 'opencv'
     fill_color='#ffffff',
     migan_strength=1.0,
     migan_blend_edges=True,
@@ -92,7 +92,7 @@ def process_image_translation(
         prompt_content (str): 自定义翻译提示词内容
         use_textbox_prompt (bool): 是否使用专为文本框优化的提示词
         textbox_prompt_content (str): 文本框翻译的提示词内容
-        inpainting_method (str): 气泡内容擦除方法，可选'solid'(纯色填充)或'lama'(AI修复)
+        inpainting_method (str): 气泡内容擦除方法，可选'solid'(纯色填充)、'lama'(AI修复)或'opencv'(OpenCV修复)
         fill_color (str): 气泡填充颜色，格式为十六进制RGB如'#ffffff'
         migan_strength (float): MIGAN修复强度，范围0.0-1.0
         migan_blend_edges (bool): 是否对MIGAN修复结果的边缘进行混合
@@ -134,6 +134,9 @@ def process_image_translation(
         注意: 如果处理失败，processed_image将是原始图像的副本。
     """
     logger.info(f"开始处理图像翻译流程: 源={source_language}, 目标={target_language}, 修复={inpainting_method}")
+    if inpainting_method not in ['solid', 'lama', 'opencv']:
+        logger.warning(f"未知的修复方法 {inpainting_method}，回退到纯色填充")
+        inpainting_method = 'solid'
     start_time_total = time.time() # 记录总时间
 
     original_image_copy = image_pil.copy() # 保留原始副本以备失败时返回

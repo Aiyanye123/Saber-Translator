@@ -155,6 +155,7 @@ async function removeAllImagesText() {
         const repairSettings = ui.getRepairSettings();
         const useInpainting = repairSettings.useInpainting;
         const useLama = repairSettings.useLama;
+        const useOpenCV = repairSettings.useOpenCV;
         const blendEdges = state.blendEdges !== undefined ? state.blendEdges : $('#blendEdges').prop('checked');
         const inpaintingStrength = state.inpaintingStrength !== undefined ? state.inpaintingStrength : parseFloat($('#inpaintingStrength').val());
         const fillColor = state.defaultFillColor;
@@ -207,7 +208,8 @@ async function removeAllImagesText() {
             const imageData = state.images[currentIndex];
             
             // 添加日志，显示当前使用的修复方式
-            console.log(`高质量翻译-消除文字[${currentIndex + 1}/${totalImages}]: 使用修复方式: ${useLama ? 'LAMA' : (useInpainting ? 'MI-GAN' : '纯色填充')}`);
+            const methodName = useLama ? 'LAMA' : (useInpainting ? 'MI-GAN' : (useOpenCV ? 'OpenCV' : '纯色填充'));
+            console.log(`高质量翻译-消除文字[${currentIndex + 1}/${totalImages}]: 使用修复方式: ${methodName}`);
             
             // 准备API请求参数
             const params = {
@@ -220,6 +222,7 @@ async function removeAllImagesText() {
                 textDirection: textDirection,
                 use_inpainting: useInpainting,
                 use_lama: useLama,
+                use_opencv: useOpenCV,
                 blend_edges: blendEdges,
                 inpainting_strength: inpaintingStrength,
                 fill_color: fillColor,

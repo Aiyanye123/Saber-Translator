@@ -901,7 +901,9 @@ export function handleUseManualBoxesClick() {
         layout_direction: $('#layoutDirection').val(),
         text_color: $('#textColor').val(),
         fill_color: $('#fillColor').val(),
-        use_inpainting: $('#useInpainting').val(),
+        use_inpainting: $('#useInpainting').val() === 'true',
+        use_lama: $('#useInpainting').val() === 'lama',
+        use_opencv: $('#useInpainting').val() === 'opencv',
         ocr_engine: $('#ocrEngine').val(),
         provided_coords: state.manualBubbleCoords // 手动标注的坐标
     };
