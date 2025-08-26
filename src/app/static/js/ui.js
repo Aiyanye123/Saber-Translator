@@ -1006,14 +1006,15 @@ export function hideTranslatingIndicator(index) {
 
 /**
  * 获取当前选择的气泡填充/修复方式设置
- * @returns {{useInpainting: boolean, useLama: boolean}}
- */
+ * @returns {{useInpainting: boolean, useLama: boolean, useOpenCV: boolean}}
+*/
 export function getRepairSettings() {
     const repairMethod = $('#useInpainting').val(); // 在函数内获取元素
     // console.log("获取修复设置:", repairMethod); // 可以取消注释用于调试
     return {
         useInpainting: repairMethod === 'true', // MI-GAN
-        useLama: repairMethod === 'lama'      // LAMA
+        useLama: repairMethod === 'lama',      // LAMA
+        useOpenCV: repairMethod === 'opencv'   // OpenCV
     };
 }
 

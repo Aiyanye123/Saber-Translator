@@ -610,6 +610,7 @@ def render_single_bubble(
     text_color=constants.DEFAULT_TEXT_COLOR,
     rotation_angle=constants.DEFAULT_ROTATION_ANGLE,
     use_lama=False,
+    use_opencv=False,
     fill_color=constants.DEFAULT_FILL_COLOR,
     # 新增描边参数 (这些应来自前端对单个气泡的设置，或全局设置)
     enable_stroke_param=False,
@@ -645,7 +646,10 @@ def render_single_bubble(
         # from src.interfaces.migan_interface import is_migan_available
         
         inpainting_method = 'solid'
-        if use_lama and is_lama_available(): inpainting_method = 'lama'
+        if use_lama and is_lama_available():
+            inpainting_method = 'lama'
+        elif use_opencv:
+            inpainting_method = 'opencv'
         # elif use_inpainting and is_migan_available(): inpainting_method = 'migan'
         img_pil, generated_clean_bg = inpaint_bubbles(
             image, target_coords, method=inpainting_method, fill_color=fill_color
@@ -755,6 +759,7 @@ def re_render_text_in_bubbles(
     blend_edges=True,
     inpainting_strength=constants.DEFAULT_INPAINTING_STRENGTH,
     use_lama=False,
+    use_opencv=False,
     fill_color=constants.DEFAULT_FILL_COLOR,
     text_color=constants.DEFAULT_TEXT_COLOR,
     rotation_angle=constants.DEFAULT_ROTATION_ANGLE,
@@ -794,7 +799,10 @@ def re_render_text_in_bubbles(
         # from src.interfaces.migan_interface import is_migan_available
         
         inpainting_method = 'solid'
-        if use_lama and is_lama_available(): inpainting_method = 'lama'
+        if use_lama and is_lama_available():
+            inpainting_method = 'lama'
+        elif use_opencv:
+            inpainting_method = 'opencv'
         # elif use_inpainting and is_migan_available(): inpainting_method = 'migan'
 
         logger.info(f"重渲染时选择修复/填充方法: {inpainting_method}")

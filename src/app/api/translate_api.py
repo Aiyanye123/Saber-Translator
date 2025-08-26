@@ -95,6 +95,7 @@ def translate_image():
         blend_edges = data.get('blend_edges', True)
         inpainting_strength = float(data.get('inpainting_strength', constants.DEFAULT_INPAINTING_STRENGTH))
         use_lama = data.get('use_lama', False)  # 添加LAMA修复选项
+        use_opencv = data.get('use_opencv', False)  # 新增OpenCV修复选项
         skip_translation = data.get('skip_translation', False)  # 跳过翻译参数
         skip_ocr = data.get('skip_ocr', False)  # 跳过OCR参数
         remove_only = data.get('remove_only', False)  # 新增：仅消除文字模式参数
@@ -200,6 +201,9 @@ def translate_image():
             else:
                 inpainting_method = 'lama'
                 logger.info("使用LAMA修复方式")
+        elif use_opencv:
+            inpainting_method = 'opencv'
+            logger.info("使用OpenCV修复方式")
         elif use_inpainting:
             inpainting_method = 'inpainting'
             logger.info("使用MI-GAN修复方式")
@@ -380,6 +384,7 @@ def re_render_image():
         text_direction = data.get('textDirection', constants.DEFAULT_TEXT_DIRECTION)
         use_inpainting = data.get('use_inpainting', False)
         use_lama = data.get('use_lama', False)  # 添加LAMA修复选项
+        use_opencv = data.get('use_opencv', False)
         blend_edges = data.get('blend_edges', True)  # 默认启用边缘融合
         inpainting_strength = float(data.get('inpainting_strength', constants.DEFAULT_INPAINTING_STRENGTH))  # 默认修复强度为1.0
         is_font_style_change = data.get('is_font_style_change', False)  # 是否仅是字体/字号修改
@@ -402,7 +407,7 @@ def re_render_image():
         logger_clean_data = "null" if clean_image_data is None else f"长度: {len(clean_image_data)}"
         logger_styles_data = "null" if all_bubble_styles is None else f"长度: {len(all_bubble_styles)}"
         logger.info(f"重新渲染参数: fontSize_str={fontSize_str}, autoFontSize={data.get('autoFontSize')}, textDirection={text_direction}, translated_text={logger_text_data}, bubble_coords={logger_bubble_data}, is_font_style_change={is_font_style_change}")
-        logger.info(f"传入的干净图片数据: {logger_clean_data}, 使用智能修复: {use_inpainting}, 使用LAMA修复: {use_lama}")
+        logger.info(f"传入的干净图片数据: {logger_clean_data}, 使用智能修复: {use_inpainting}, 使用LAMA修复: {use_lama}, 使用OpenCV修复: {use_opencv}")
         logger.info(f"所有气泡样式数据: {logger_styles_data}")
         
         # 新的检查逻辑:
@@ -558,6 +563,7 @@ def re_render_image():
             blend_edges=blend_edges,
             inpainting_strength=inpainting_strength,
             use_lama=use_lama,  # 传递LAMA修复选项
+            use_opencv=use_opencv,
             fill_color=data.get('fill_color', constants.DEFAULT_FILL_COLOR),  # 传递填充颜色，默认白色
             text_color=textColor,  # 传递文字颜色
             rotation_angle=rotationAngle,  # 传递旋转角度
@@ -603,6 +609,7 @@ def re_render_single_bubble():
         clean_image_data = data.get('clean_image', '')
         use_inpainting = data.get('use_inpainting', False)
         use_lama = data.get('use_lama', False)  # 添加LAMA修复选项
+        use_opencv = data.get('use_opencv', False)
         is_single_bubble_style = data.get('is_single_bubble_style', False)
         
         # 新增参数：文字颜色和旋转角度
@@ -632,7 +639,7 @@ def re_render_single_bubble():
         logger.info(f"气泡样式数量={len(all_bubble_styles)}")
         logger.info(f"原始图像数据长度={len(image_data) if image_data else 0}")
         logger.info(f"干净图像数据长度={len(clean_image_data) if clean_image_data else 0}")
-        logger.info(f"使用MI-GAN修复={use_inpainting}, 使用LAMA修复={use_lama}")
+        logger.info(f"使用MI-GAN修复={use_inpainting}, 使用LAMA修复={use_lama}, 使用OpenCV修复={use_opencv}")
         logger.info(f"单个气泡样式设置={is_single_bubble_style}")
         logger.info(f"文字颜色={text_color}, 旋转角度={rotation_angle}")
         
@@ -703,6 +710,7 @@ def re_render_single_bubble():
         clean_image_data = data.get('clean_image', '')
         use_inpainting = data.get('use_inpainting', False)
         use_lama = data.get('use_lama', False)  # 添加LAMA修复选项
+        use_opencv = data.get('use_opencv', False)
         is_single_bubble_style = data.get('is_single_bubble_style', False)
         
         logger.info(f"使用MI-GAN修复={use_inpainting}, 使用LAMA修复={use_lama}")
@@ -791,10 +799,10 @@ def re_render_single_bubble():
         try:
             logger.info("开始调用render_single_bubble函数...")
             rendered_image = render_single_bubble(
-                image, 
-                bubble_index, 
-                all_texts, 
-                bubble_coords, 
+                image,
+                bubble_index,
+                all_texts,
+                bubble_coords,
                 fontSize,
                 corrected_font_path,
                 text_direction,
@@ -804,7 +812,8 @@ def re_render_single_bubble():
                 text_color,          # 文字颜色参数
                 rotation_angle,      # 旋转角度参数
                 use_lama,           # LAMA修复选项
-                data.get('fill_color', constants.DEFAULT_FILL_COLOR) # 填充颜色参数
+                use_opencv=use_opencv,
+                fill_color=data.get('fill_color', constants.DEFAULT_FILL_COLOR)
             )
             logger.info("成功调用render_single_bubble函数，获得渲染结果")
             
@@ -969,6 +978,7 @@ def apply_settings_to_all_images():
                     blend_edges=True,
                     inpainting_strength=constants.DEFAULT_INPAINTING_STRENGTH,
                     use_lama=use_lama,  # 传递LAMA修复选项
+                    use_opencv=use_opencv,
                     fill_color=data.get('fill_color', constants.DEFAULT_FILL_COLOR),  # 使用文字颜色作为填充颜色
                     text_color=textColor,  # 传递文字颜色
                     rotation_angle=rotationAngle,  # 传递旋转角度

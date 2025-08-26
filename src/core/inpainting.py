@@ -97,7 +97,7 @@ def inpaint_bubbles(image_pil, bubble_coords, method='solid', fill_color=constan
     Args:
         image_pil (PIL.Image.Image): 原始 PIL 图像。
         bubble_coords (list): 气泡坐标列表 [(x1, y1, x2, y2), ...]。
-        method (str): 修复方法 ('solid', 'lama')。
+        method (str): 修复方法 ('solid', 'lama', 'opencv')。
         fill_color (str): 'solid' 方法使用的填充颜色。
 
     Returns:
@@ -140,6 +140,20 @@ def inpaint_bubbles(image_pil, bubble_coords, method='solid', fill_color=constan
         except Exception as e:
              logger.error(f"LAMA 修复过程中出错: {e}", exc_info=True)
              logger.info("LAMA 出错，将回退。")
+
+    elif method == 'opencv':
+        logger.info("使用 OpenCV inpaint 进行修复...")
+        try:
+            # cv2.inpaint 要求掩码中非零区域为修复区，因此需要反转掩码
+            mask_for_cv = cv2.bitwise_not(bubble_mask_np)
+            repaired_img = cv2.inpaint(img_np, mask_for_cv, 3, cv2.INPAINT_TELEA)
+            result_img = Image.fromarray(repaired_img)
+            clean_background = result_img.copy()
+            inpainting_successful = True
+            logger.info("OpenCV 修复成功。")
+        except Exception as e:
+            logger.error(f"OpenCV 修复过程中出错: {e}", exc_info=True)
+            logger.info("OpenCV 出错，将回退到纯色填充。")
 
     # 如果修复未成功或选择了纯色填充
     if (not inpainting_successful) or method == 'solid':

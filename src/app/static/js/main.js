@@ -851,6 +851,7 @@ export function translateCurrentImage() {
     ui.showTranslatingIndicator(state.currentImageIndex);
 
     const repairSettings = ui.getRepairSettings();
+    const useOpenCV = repairSettings.useOpenCV;
     const isAutoFontSize = $('#autoFontSize').is(':checked');
     const fontSize = isAutoFontSize ? 'auto' : $('#fontSize').val();
     const ocr_engine = $('#ocrEngine').val();
@@ -884,6 +885,7 @@ export function translateCurrentImage() {
         textbox_prompt_content: $('#textboxPromptContent').val(),
         use_inpainting: repairSettings.useInpainting,
         use_lama: repairSettings.useLama,
+        use_opencv: useOpenCV,
         blend_edges: $('#blendEdges').prop('checked'),
         inpainting_strength: parseFloat($('#inpaintingStrength').val()),
         fill_color: $('#fillColor').val(),
@@ -1064,6 +1066,8 @@ export function translateAllImages() {
     const repairSettings = ui.getRepairSettings(); // ui.js 获取修复设置
     const useInpainting = repairSettings.useInpainting;
     const useLama = repairSettings.useLama;
+    const useOpenCV = repairSettings.useOpenCV;
+    const useOpenCV = repairSettings.useOpenCV;
     const inpaintingStrength = parseFloat($('#inpaintingStrength').val());
     const blendEdges = $('#blendEdges').prop('checked');
     const promptContent = $('#promptContent').val();
@@ -1184,7 +1188,7 @@ export function translateAllImages() {
             fontFamily: fontFamily, textDirection: textDirection,
             prompt_content: promptContent, use_textbox_prompt: useTextboxPrompt,
             textbox_prompt_content: textboxPromptContent, use_inpainting: useInpainting,
-            use_lama: useLama, blend_edges: blendEdges, inpainting_strength: inpaintingStrength,
+            use_lama: useLama, use_opencv: useOpenCV, blend_edges: blendEdges, inpainting_strength: inpaintingStrength,
             fill_color: fillColor,
             text_color: textColor,
             rotation_angle: rotationAngle,
@@ -1940,7 +1944,8 @@ export function removeAllBubblesText() {
             use_textbox_prompt: false,
             textbox_prompt_content: '',
             use_inpainting: useInpainting,
-            use_lama: useLama, 
+            use_lama: useLama,
+            use_opencv: useOpenCV,
             blend_edges: blendEdges, 
             inpainting_strength: inpaintingStrength,
             fill_color: fillColor,
